@@ -130,6 +130,7 @@ class Category(models.Model):
 
 
 class Product(models.Model):
+    article = models.CharField(max_length=30, verbose_name='Артикул', null=True, blank=True)
     name = models.CharField(max_length=80, verbose_name='Название')
     category = models.ForeignKey(Category, verbose_name='Категория', related_name='products', blank=True,
                                  on_delete=models.SET_NULL, null=True)
@@ -142,7 +143,7 @@ class Product(models.Model):
                 fields=['article', 'name', ],
                 name='unique_product_name'),
         ]
-        ordering = ('-name', '-category')
+        ordering = ('-article', '-name', '-category')
 
     def __str__(self):
         return f' {self.name}'
@@ -220,7 +221,7 @@ class Order(models.Model):
     user = models.ForeignKey(User, verbose_name='Пользователь',
                              related_name='orders', blank=True,
                              on_delete=models.CASCADE)
-    created_at = models.DateTimeField(auto_now_add=True, null=False, verbose_name='Время создания')
+    dt = models.DateTimeField(auto_now_add=True)
     state = models.CharField(verbose_name='Статус', choices=STATE_CHOICES, max_length=15)
     contact = models.ForeignKey(Contact, verbose_name='Контакт',
                                 blank=True, null=True,
@@ -229,10 +230,10 @@ class Order(models.Model):
     class Meta:
         verbose_name = 'Заказ(Order)'
         verbose_name_plural = "Список заказов(Order)"
-        ordering = ('-created_at',)
+        ordering = ('-dt',)
 
     def __str__(self):
-        return f'{str(self.created_at)} {self.id} {self.state}'
+        return f'{str(self.dt)} {self.id} {self.state}'
 
 
 
