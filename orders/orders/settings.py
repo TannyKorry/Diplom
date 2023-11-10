@@ -36,10 +36,12 @@ ALLOWED_HOSTS = [os.getenv('ALLOWED_HOSTS')]
 INSTALLED_APPS = [
     'django.contrib.admin',
     'django.contrib.auth',
+    'django.contrib.sites',
     'django.contrib.contenttypes',
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
+    # 'debug_toolbar',
 
     'backend_api.apps.BackendApiConfig',
 
@@ -47,6 +49,9 @@ INSTALLED_APPS = [
 
     'rest_framework.authtoken',
     'django_rest_passwordreset',
+    'allauth',
+    'allauth.account',
+    'allauth.socialaccount',
 
 ]
 
@@ -58,6 +63,7 @@ MIDDLEWARE = [
     'django.contrib.auth.middleware.AuthenticationMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
+    'allauth.account.middleware.AccountMiddleware',
 ]
 
 ROOT_URLCONF = 'orders.urls'
@@ -65,7 +71,7 @@ ROOT_URLCONF = 'orders.urls'
 TEMPLATES = [
     {
         'BACKEND': 'django.template.backends.django.DjangoTemplates',
-        'DIRS': [],
+        'DIRS': [os.path.normpath(os.path.join(BASE_DIR, 'templates')), ],
         'APP_DIRS': True,
         'OPTIONS': {
             'context_processors': [
@@ -140,15 +146,31 @@ STATIC_ROOT = os.path.join(BASE_DIR, 'static')
 
 AUTH_USER_MODEL = 'backend_api.User'
 
+SITE_ID = 1
+
+
 EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'
-# EMAIL_USE_TLS = True
+EMAIL_USE_TLS = True
 
 EMAIL_HOST = 'smtp.mail.ru'
 EMAIL_HOST_USER = 'netology-pdiplom@mail.ru'
 EMAIL_HOST_PASSWORD = 'i~8W4rdRPFlo'
 EMAIL_PORT = '465'
-EMAIL_USE_SSL = True
+# EMAIL_USE_SSL = True
 SERVER_EMAIL = EMAIL_HOST_USER
+EMAIL_FROM = EMAIL_HOST_USER
+DEFAULT_FROM_EMAIL = EMAIL_HOST_USER
+
+AUTHENTICATION_BACKENDS = [
+    'django.contrib.auth.backends.ModelBackend',
+    'allauth.account.auth_backends.AuthenticationBackend',
+]
+
+ACCOUNT_EMAIL_CONFIRMATION_EXPIRE_DAYS = 1       # Срок действия подтверждения по электронной почте 1 день
+ACCOUNT_EMAIL_REQUIRED = True                    # Для активации требуется адрес электронной почты
+ACCOUNT_EMAIL_VERIFICATION = 'none'              # Разрешить пользователю входить в систему без электронного письма
+ACCOUNT_LOGOUT_REDIRECT_URL = '/'                # Перенаправление URL-адреса входа в систему
+LOGIN_REDIRECT_URL = '/accounts/email/'          # Перенаправление URL-адреса выхода из системы
 
 
 REST_FRAMEWORK = {
@@ -158,3 +180,4 @@ REST_FRAMEWORK = {
     ],
 
 }
+
